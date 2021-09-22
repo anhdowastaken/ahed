@@ -1,7 +1,7 @@
 /*
  * Adaptive Huffman encoder/decoder.
  * @author: David Durman
- */ 
+ */
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -109,7 +109,7 @@ int main(int argc, char **argv)
   if (cFlag == 1)
     AHEDEncoding(ahed, inputFile, outputFile);
   else if (xFlag == 1)
-    AHEDDecoding(ahed, inputFile, outputFile);  
+    AHEDDecoding(ahed, inputFile, outputFile);
 
 
   // log
@@ -126,6 +126,3 @@ int main(int argc, char **argv)
 
   return AHEDOK;
 }
-
-
-	

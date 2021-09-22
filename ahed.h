@@ -14,12 +14,13 @@
 
 // Encoder/decoder log
 typedef struct{
-	/* size of the decoded string */
-	int64_t uncodedSize;
-	/* size of the encoded string */
-	int64_t codedSize;
+  /* size of the decoded string */
+  int64_t uncodedSize;
+  /* size of the encoded string */
+  int64_t codedSize;
 } tAHED;
 
+void AHEDError(const char *fmt, ...);
 
 /** 
  * Encodes the input file, stores the result to the output file and log actions.

@@ -1,7 +1,7 @@
 /*
  * Adaptive Huffman encoder/decoder.
  * @author: David Durman
- */ 
+ */
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -101,7 +101,7 @@ int AHEDGetInputBufferChar(FILE* file){
 int AHEDPutBit2Buffer(FILE* file, int value){
   if (value)
     outputBuffer |= (1 << outputBufferPos);
-  else 
+  else
     outputBuffer &= (~(1 << outputBufferPos));
 
   outputBufferPos--;
@@ -202,28 +202,28 @@ void AHEDActualizeTree(t_node** tree_array, t_node* actual_node){
     i = node->order - 1;
     for (; i >= 0; i--){
       if (tree_array[i]->freq == node->freq
-	  && tree_array[i] != node->parent)
-	sfho_node = tree_array[i];
+        && tree_array[i] != node->parent)
+        sfho_node = tree_array[i];
     }
-    
+
     if (sfho_node != NULL){
       // swap node and sfho_node
 
       // swap subtrees
-      assert(node != sfho_node);       
-      
+      assert(node != sfho_node);
+
       node_parent_left = node->parent->left;
       node_parent_right = node->parent->right;
 
       if (sfho_node->parent->left == sfho_node)
-	sfho_node->parent->left = node;
+        sfho_node->parent->left = node;
       else if (sfho_node->parent->right == sfho_node)
-	sfho_node->parent->right = node;
+        sfho_node->parent->right = node;
 
       if (node_parent_left == node){
-	node->parent->left = sfho_node;
+        node->parent->left = sfho_node;
       } else if (node_parent_right == node)
-	node->parent->right = sfho_node;
+        node->parent->right = sfho_node;
 
 
       // swap parent pointers
@@ -252,7 +252,7 @@ void AHEDActualizeTree(t_node** tree_array, t_node* actual_node){
   node->freq++;
 }
 
-/** 
+/**
  * Encode the input file, save the result to the output file and log actions.
  * @param {tAHED} ahed encoding log
  * @param {FILE*} inputFile decoded input file
@@ -274,7 +274,7 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
     tree_array[i] = NULL;
 
   t_node* tree_root = NULL;
-  
+
   // create ZERO node
   t_node* zero_node = malloc(sizeof(t_node));
   if (zero_node == NULL){
@@ -289,7 +289,7 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
   zero_node->parent = NULL;
 
   tree_root = zero_node;	// ZERO is the root
-  tree_array[0] = zero_node;	
+  tree_array[0] = zero_node;
 
   int c;	// read symbol
   while ( (c = getc(inputFile)) != EOF ){
@@ -307,8 +307,8 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
       // create a new node with the character c
       t_node* nodeX = malloc(sizeof(t_node));
       if (nodeX == NULL){
-	AHEDError("not enough memory");
-	return AHEDFail;
+        AHEDError("not enough memory");
+        return AHEDFail;
       }
       nodeX->freq = 1;
       nodeX->character = c;
@@ -319,8 +319,8 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
       // create new inner node
       t_node* nodeU = malloc(sizeof(t_node));
       if (nodeU == NULL){
-	AHEDError("not enough memory");
-	return AHEDFail;
+        AHEDError("not enough memory");
+        return AHEDFail;
       }
       nodeU->freq = 0;
       nodeU->character = INNER_NODE;
@@ -332,7 +332,7 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
       // connect the new node to the left child of ZERO parent
       // ZERO goes left down in the tree
       if (zero_node->parent != NULL)
-	zero_node->parent->left = nodeU;
+        zero_node->parent->left = nodeU;
 
       nodeX->parent = nodeU;
       zero_node->parent = nodeU;
@@ -351,11 +351,11 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
       t_node* nodeX = NULL;
       // find node with the character c
       for (i = 0; i < MAX_NODES; i++){
-	assert(tree_array[i] != NULL);
-	if (tree_array[i]->character == c){
-	  nodeX = tree_array[i];
-	  break;
-	}
+        assert(tree_array[i] != NULL);
+        if (tree_array[i]->character == c){
+          nodeX = tree_array[i];
+          break;
+        }
       }
       assert(nodeX != NULL);
       assert(nodeX->parent != NULL); // it cannot be the root node
@@ -380,7 +380,7 @@ int AHEDEncoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
   return AHEDOK;
 }
 
-/** 
+/**
  * Decodes the input file, stores result to the output file and log actions.
  * @param {tAHED*} ahed decoding log
  * @param {FILE*} inputFile encoded input file
@@ -397,11 +397,11 @@ int AHEDDecoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
   ahed->codedSize = 0;
 
   int i;
-  t_node* tree_array[MAX_NODES];	
+  t_node* tree_array[MAX_NODES];
   for (i = 0; i < MAX_NODES; i++)
     tree_array[i] = NULL;
 
-  t_node* tree_root = NULL;	
+  t_node* tree_root = NULL;
 
   // create ZERO node
   t_node* zero_node = malloc(sizeof(t_node));
@@ -417,33 +417,33 @@ int AHEDDecoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
   zero_node->parent = NULL;
 
   tree_root = zero_node;	// ZERO is the root
-  tree_array[0] = zero_node;	
+  tree_array[0] = zero_node;
 
   bool not_enc_symbol = true;	// is symbol uncompressed?
 
   int c;	// read symbol
   int end = 0;	// decoder end indicator
   while (!end){
-    
+
     if (not_enc_symbol == true){
       // Symbol is uncompressed
 
       c = AHEDGetInputBufferChar(inputFile);
       if (c == EOF)
-	break;
+        break;
       ahed->codedSize++;
 
       putc(c, outputFile);	// output one byte
       ahed->uncodedSize++;
-      
+
       // update ZERO node order -> move down the tree
       zero_node->order = zero_node->order + 2;
 
       // create a new node with character c
       t_node* nodeX = malloc(sizeof(t_node));
       if (nodeX == NULL){
-	AHEDError("not enough memory");
-	return AHEDFail;
+        AHEDError("not enough memory");
+        return AHEDFail;
       }
       nodeX->freq = 1;
       nodeX->character = c;
@@ -454,8 +454,8 @@ int AHEDDecoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
       // create a new inner node
       t_node* nodeU = malloc(sizeof(t_node));
       if (nodeU == NULL){
-	AHEDError("not enough memory");
-	return AHEDFail;
+  AHEDError("not enough memory");
+  return AHEDFail;
       }
       nodeU->freq = 0;
       nodeU->character = INNER_NODE;
@@ -467,7 +467,7 @@ int AHEDDecoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
       // connect the new inner node to the left child of the ZERO parent
       // ZERO goes to the left down in the tree
       if (zero_node->parent != NULL)
-	zero_node->parent->left = nodeU;
+        zero_node->parent->left = nodeU;
 
       nodeX->parent = nodeU;
       zero_node->parent = nodeU;
@@ -485,38 +485,38 @@ int AHEDDecoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
       // compressed symbol
 
       t_node* p_node = tree_array[0];
-      
+
       // code has to end in a leaf node
 
       int nextBit;
 
       while (p_node->right != NULL && p_node->left != NULL){
-	nextBit = AHEDGetInputBufferNextBit(inputFile);
-	if (nextBit == 1)
-	  p_node = p_node->right;
-	else if (nextBit == 0)
-	  p_node = p_node->left;
-	else {	// end of file
-	  end = true;
-	  break;
-	}
+        nextBit = AHEDGetInputBufferNextBit(inputFile);
+        if (nextBit == 1)
+          p_node = p_node->right;
+        else if (nextBit == 0)
+          p_node = p_node->left;
+        else {	// end of file
+          end = true;
+          break;
+        }
 
-	// input buffer filled -> process the next byte
-	if (inputBufferPos == 6)
-	  ahed->codedSize++;
+        // input buffer filled -> process the next byte
+        if (inputBufferPos == 6)
+          ahed->codedSize++;
       }
       // end of file?
       if (!end){
-	// is the next symbol uncompressed?
-	if (p_node->character == ZERO_NODE){
-	  not_enc_symbol = true;
-	} else {
-	  // p_node is a leaf node with the character
-	  putc(p_node->character, outputFile);
-	  ahed->uncodedSize++;
-	  AHEDActualizeTree(tree_array, p_node);
-	  not_enc_symbol = false;
-	}
+        // is the next symbol uncompressed?
+        if (p_node->character == ZERO_NODE){
+          not_enc_symbol = true;
+        } else {
+          // p_node is a leaf node with the character
+          putc(p_node->character, outputFile);
+          ahed->uncodedSize++;
+          AHEDActualizeTree(tree_array, p_node);
+          not_enc_symbol = false;
+        }
       }//endif (!end)
     }
   }//endwhile
@@ -531,5 +531,3 @@ int AHEDDecoding(tAHED *ahed, FILE *inputFile, FILE *outputFile)
 
   return AHEDOK;
 }
-
-
